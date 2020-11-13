@@ -1,17 +1,28 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { render, unmountComponentAtNode } from 'react-dom'
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import { createMicrofrontendRegistration } from 'avail-microfe-base'
+import { BrowserRouter } from 'react-router-dom';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+createMicrofrontendRegistration({
+  id: 'listing',
+  init: (containerId:string, options:any) => {
+      const { history, subscribe } = options
+      render(
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>,
+        document.getElementById(containerId)
+      );
+      return Promise.resolve()
+  },
+  update: () => Promise.resolve(),
+  unmount: (containerId:string) => {
+	  const container = document.getElementById(containerId)
+	  if (container) {
+		  unmountComponentAtNode(container)
+	  }
+      return Promise.resolve()
+  }
+})
